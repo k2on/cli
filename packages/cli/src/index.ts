@@ -1,23 +1,55 @@
-export type Command = {
+import { z, ZodNever, ZodSchema, ZodTypeAny } from "zod";
+import { commands } from "./util";
+
+class CommandBuilder<T extends ZodSchema> {
+    private schema: ZodSchema | undefined;
+    private description: string | undefined;
+
+    constructor(builder?: CommandBuilder<T>) {
+        if (builder) {
+            this.schema = builder.schema;
+            this.description = builder.description;
+        }
+    }
+
+    describe(description: string) {
+        this.description = description;
+        return this;
+    }
+
+    input(schema: ZodSchema) {
+        this.schema = schema;
+
+        return new CommandBuilder<z.infer<typeof schema>>(this);
+    }
+
+    fn(fn: (input: T) => void): BuildCommand<any> {
+        return {
+            _type: "command",
+            input: this.schema,
+            description: this.description,
+            fn,
+        };
+    }
+}
+
+export function command() {
+    return new CommandBuilder();
+}
+
+interface BuildCommand<T extends ZodTypeAny> {
     _type: "command";
-    fn: () => void;
-};
+    input?: ZodSchema<T>;
+    description?: string;
+    fn: (input: T) => void;
+}
 
 export type Commands = {
     _type: "cli";
     commands: Record<string, CLI>;
 };
 
-export type CLI = Command | Commands;
-
-function commands(input: CLI) {
-    if (input._type == "cli") {
-        console.log("Commands:");
-        console.log(Object.keys(input.commands).join("\n"));
-    } else {
-        console.log("Command:", input);
-    }
-}
+export type CLI = BuildCommand<any> | Commands;
 
 function next(input: CLI, current: string | undefined, args: string[]) {
     if (!current) return commands(input);
@@ -30,7 +62,22 @@ function next(input: CLI, current: string | undefined, args: string[]) {
         }
 
         if (handler._type == "command") {
-            handler.fn();
+            // @ts-ignore
+            const shape = handler.input?.shape;
+            const keys = Object.keys(shape);
+
+            const remainingArgs = args.slice(1);
+
+            const obj = keys.reduce(
+                (acc, key, index) => {
+                    // @ts-ignore
+                    acc[key] = remainingArgs[index];
+                    return acc;
+                },
+                {} as Record<string, unknown>,
+            );
+
+            handler.fn(obj);
             return;
         } else {
             const nextArg = args[1];
@@ -54,16 +101,5 @@ export const router = (commands: Commands["commands"]): Commands => {
     return {
         _type: "cli",
         commands,
-    };
-};
-
-export const command = () => {
-    return {
-        fn: (functionInput: () => void): Command => {
-            return {
-                _type: "command",
-                fn: functionInput,
-            };
-        },
     };
 };
