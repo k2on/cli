@@ -1,27 +1,41 @@
-export type CLIInput = Record<string, Function>;
+export type Command = () => void;
 
-const run = (input: CLIInput) => {
-    const args = process.argv.slice(2);
+export interface CLI {
+    [key: string]: CLI | Command;
+}
 
-    const command = args[0];
+function commands(input: CLI) {
+    console.log("Commands:");
+    console.log(Object.keys(input).join("\n"));
+}
 
-    if (!command) {
-        console.log("Commands:");
-        console.log(Object.keys(input).join("\n"));
-        return;
-    }
+function next(input: CLI, current: string | undefined, args: string[]) {
+    if (!current) return commands(input);
 
-    const handler = input[command];
+    const handler = input[current];
     if (!handler) {
-        console.log("Command not found");
+        console.log(`Command ${current} not found`);
         return;
     }
 
-    handler();
-};
+    if (typeof handler === "function") {
+        handler();
+        return;
+    } else {
+        const nextArg = args[1];
+        const remainingArgs = args.slice(1);
+        next(handler, nextArg, remainingArgs);
+    }
+}
 
-export const cli = (input: CLIInput) => {
-    return {
-        run: () => run(input),
-    };
+export function run(input: CLI) {
+    const args = process.argv.slice(2);
+    const current = args[0];
+    const commands = input;
+
+    next(commands, current, args);
+}
+
+export const router = (input: CLI) => {
+    return input;
 };
