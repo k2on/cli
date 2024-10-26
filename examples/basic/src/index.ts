@@ -1,25 +1,13 @@
 import { run, router, command } from "@koons/cli";
 import z from "zod";
 
-const c = command().input(z.string());
-
 const cli = router({
     add: router({
         module: command()
             .describe("Add a module")
             .input(z.object({ name: z.number() }))
             .fn(({ name }) => {
-                console.log(`Name: ${name}`);
-            }),
-        package: command()
-            .describe("Add a package")
-            .input(
-                z.object({
-                    name: z.string(),
-                }),
-            )
-            .fn(({ name }) => {
-                console.log(`Package name: ${name}`);
+                console.log(`Adding module: "${name}`);
             }),
     }),
     help: command()
