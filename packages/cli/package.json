@@ -1,6 +1,6 @@
 {
     "name": "@koons/cli",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -21,8 +21,7 @@
         "typescript": "5.5.4"
     },
     "dependencies": {
-        "react": "^18.2.0",
-        "zod": "^3.23.8"
+        "react": "^18.2.0"
     },
     "publishConfig": {
         "access": "public"
