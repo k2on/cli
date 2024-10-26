@@ -1,11 +1,13 @@
-import { run, router } from "@koons/cli";
+import { run, router, command } from "@koons/cli";
 
 const cli = router({
     add: router({
-        module: () => console.log("Adding module"),
+        module: command().fn(() => {
+            console.log("Adding module");
+        }),
     }),
-    help: () => console.log("Help command"),
-    version: () => console.log("Version 1.0"),
+    help: command().fn(() => console.log("Help command")),
+    version: command().fn(() => console.log("Version 1.0")),
 });
 
 run(cli);
