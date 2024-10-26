@@ -17,7 +17,7 @@ class CommandBuilder<T extends ZodSchema> {
         return this;
     }
 
-    input(schema: ZodSchema) {
+    input<I extends ZodTypeAny>(schema: I) {
         this.schema = schema;
 
         return new CommandBuilder<z.infer<typeof schema>>(this);

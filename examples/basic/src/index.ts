@@ -1,6 +1,8 @@
 import { run, router, command } from "@koons/cli";
 import z from "zod";
 
+const c = command().input(z.string());
+
 const cli = router({
     add: router({
         module: command()
