@@ -10,9 +10,6 @@ const cli = router({
                 console.log(`Adding module: "${name}`);
             }),
     }),
-    help: command()
-        .describe("Show help for the CLI")
-        .fn(() => console.log("Help command")),
     version: command()
         .describe("Show the CLI version")
         .fn(() => console.log("Version 1.0")),
