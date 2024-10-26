@@ -11,8 +11,8 @@ const cli = router({
         module: command()
             .describe("Add a module")
             .input(z.object({ name: z.number() }))
-            .fn(({ name }) => {
-                console.log(`Adding module: "${name}`);
+            .fn(({ input }) => {
+                console.log(`Adding module: "${input.name}`);
             }),
     }),
     version: command()

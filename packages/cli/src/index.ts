@@ -23,7 +23,7 @@ class CommandBuilder<T extends ZodSchema> {
         return new CommandBuilder<z.infer<typeof schema>>(this);
     }
 
-    fn(fn: (input: T) => void): BuildCommand<any> {
+    fn(fn: (input: { input: T }) => void): BuildCommand<any> {
         return {
             _type: "command",
             input: this.schema,
@@ -41,7 +41,7 @@ interface BuildCommand<T extends ZodTypeAny> {
     _type: "command";
     input?: ZodSchema<T>;
     description?: string;
-    fn: (input: T) => void;
+    fn: (input: { input: T }) => void;
 }
 
 export type Commands = {
@@ -77,7 +77,7 @@ function next(input: CLI, current: string | undefined, args: string[]) {
                 {} as Record<string, unknown>,
             );
 
-            handler.fn(obj);
+            handler.fn({ input: obj });
             return;
         } else {
             const nextArg = args[1];
