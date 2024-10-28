@@ -23,7 +23,7 @@ class CommandBuilder<T extends ZodSchema> {
         return new CommandBuilder<z.infer<typeof schema>>(this);
     }
 
-    fn(fn: (input: { input: T }) => void): BuildCommand<any> {
+    fn(fn: (input: { input: T }) => Promise<void>): BuildCommand<any> {
         return {
             _type: "command",
             input: this.schema,
@@ -41,7 +41,7 @@ interface BuildCommand<T extends ZodTypeAny> {
     _type: "command";
     input?: ZodSchema<T>;
     description?: string;
-    fn: (input: { input: T }) => void;
+    fn: (input: { input: T }) => Promise<void>;
 }
 
 export type Commands = {
@@ -51,7 +51,7 @@ export type Commands = {
 
 export type CLI = BuildCommand<any> | Commands;
 
-function next(input: CLI, current: string | undefined, args: string[]) {
+async function next(input: CLI, current: string | undefined, args: string[]) {
     if (!current) return commands(input);
 
     if (input._type == "cli") {
@@ -75,10 +75,10 @@ function next(input: CLI, current: string | undefined, args: string[]) {
                     return acc;
                 }, {} as Record<string, unknown>);
 
-                handler.fn({ input: obj });
+                await handler.fn({ input: obj });
                 return;
             } else {
-                handler.fn({ input: {} });
+                await handler.fn({ input: {} });
                 return;
             }
         } else {
@@ -91,12 +91,12 @@ function next(input: CLI, current: string | undefined, args: string[]) {
     }
 }
 
-export function run(input: CLI) {
+export async function run(input: CLI) {
     const args = process.argv.slice(2);
     const current = args[0];
     const commands = input;
 
-    next(commands, current, args);
+    await next(commands, current, args);
 }
 
 export const router = (commands: Commands["commands"]): Commands => {
