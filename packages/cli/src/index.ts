@@ -62,23 +62,25 @@ function next(input: CLI, current: string | undefined, args: string[]) {
         }
 
         if (handler._type == "command") {
-            // @ts-ignore
-            const shape = handler.input?.shape;
-            const keys = Object.keys(shape);
+            if (handler.input) {
+                // @ts-ignore
+                const shape = handler.input?.shape;
+                const keys = Object.keys(shape);
 
-            const remainingArgs = args.slice(1);
+                const remainingArgs = args.slice(1);
 
-            const obj = keys.reduce(
-                (acc, key, index) => {
+                const obj = keys.reduce((acc, key, index) => {
                     // @ts-ignore
                     acc[key] = remainingArgs[index];
                     return acc;
-                },
-                {} as Record<string, unknown>,
-            );
+                }, {} as Record<string, unknown>);
 
-            handler.fn({ input: obj });
-            return;
+                handler.fn({ input: obj });
+                return;
+            } else {
+                handler.fn({ input: {} });
+                return;
+            }
         } else {
             const nextArg = args[1];
             const remainingArgs = args.slice(1);
