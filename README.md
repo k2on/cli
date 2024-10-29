@@ -12,7 +12,7 @@ const cli = router({
             .describe("Add a module")
             .input(z.object({ name: z.number() }))
             .fn(({ input }) => {
-                console.log(`Adding module: "${input.name}`);
+                console.log(`Adding module: "${input.name}"`);
             }),
     }),
     version: command()
@@ -23,7 +23,22 @@ const cli = router({
 run(cli);
 ```
 
+Will allow you to run:
+
+```sh
+my-cli add module acme-core # "Adding module: "acme-core""
+my-cli version # "Version 1.0"
+```
+
 ## Installation
+
+### Genesis
+
+```sh
+genesis add cli
+```
+
+### npm
 
 ```sh
 yarn add @koons/cli
