@@ -12,6 +12,7 @@
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.1",
+        "@koons/genesis": "^0.0.5",
         "eslint": "^8.57.0",
         "prettier": "^3.2.5",
         "turbo": "^2.2.3"
