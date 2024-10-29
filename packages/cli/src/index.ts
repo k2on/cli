@@ -37,7 +37,7 @@ export function command() {
     return new CommandBuilder();
 }
 
-interface BuildCommand<T extends ZodTypeAny> {
+export interface BuildCommand<T extends ZodTypeAny> {
     _type: "command";
     input?: ZodSchema<T>;
     description?: string;
