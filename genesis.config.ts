@@ -1,3 +1,3 @@
-import { config } from "@koons/genesis";
+import { config } from "@koons/config";
 
 export default config("cli");
